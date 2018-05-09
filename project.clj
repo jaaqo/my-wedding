@@ -11,9 +11,9 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
                  [org.clojure/core.async  "0.4.474"]
-                 [reagent "0.7.0" :exclusions [cljsjs/react]]
-                 [cljsjs/react-with-addons "15.6.1-0"]
-                 [cljsjs/reactstrap "4.2.0-1"]
+                 [reagent "0.7.0"]
+                 [secretary "1.2.3"]
+                 [venantius/accountant "0.2.4"]
                  [cljs-ajax "0.7.3"]]
 
   :plugins [[lein-figwheel "0.5.16"]

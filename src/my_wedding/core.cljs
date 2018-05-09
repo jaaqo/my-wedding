@@ -1,14 +1,15 @@
 (ns my-wedding.core
   (:require [reagent.core :as r :refer [atom]]
             [ajax.core :refer [POST]]
-            [cljsjs.reactstrap]))
+            [secretary.core :as secretary :refer-macros [defroute]]
+            [accountant.core :as accountant]))
 
 
 (enable-console-print!)
 
-
 (defonce app-state
   (atom {:api-url "https://script.google.com/macros/s/AKfycbyLCwTTW-TQcULzFl2CgIpyegFK5KyNHWPlMNPeNgzS5EoRkc0V/exec"
+         :page :home
          :form {:first-name ""
                 :last-name ""}
          :notifications []
@@ -109,8 +110,29 @@
                :handler handle-submit-success
                :error handle-submit-error})))
 
+(defn path []
+  (let [loc js/window.location]
+    (str (.-pathname loc) (.-query loc) (.-hash loc))))
 
-(defn alert-container []
+(defn current-path []
+  @(r/track path (get-state :page)))
+
+(defn navigation []
+  (let [links [{:text "Etusivu"
+                :href "/"}
+               {:href "/lahjatoiveet"
+                :text "Lahjatoiveet"}]]
+    [:nav.navbar.navbar-expand.navbar-light
+     [:ul.navbar-nav
+      (doall
+       (for [{:keys [text href]} links]
+         ^{:key href}
+         [:li.nav-item
+          [:a.nav-link {:href href
+                        :class (when (= (current-path) href) "active")} text]]))]]))
+
+
+(defn notification-container []
   (let [notifications (:notifications @app-state)
         alert-class (fn [t]
                       (condp = t
@@ -162,18 +184,68 @@
     :sending? (get-state :sending)]])
 
 
+(defn home []
+  [response-form-container])
+
+
+(defn gift-wishes []
+  [:div
+   [:h1 "Lahjatoiveet"]])
+
+
+(defmulti current-page identity)
+
+(defmethod current-page :home []
+  [home])
+
+(defmethod current-page :gift-wishes []
+  [gift-wishes])
+
+(defmethod current-page :default []
+  [:div "404"])
+
+
 (defn root []
   [:div.container
    [:div.row
     [:div.col
-     [alert-container]]]
+     [navigation]]]
    [:div.row
     [:div.col
-     [response-form-container]]]])
+     [notification-container]]]
+   [:div.row
+    [:div.col
+     [current-page (get-state :page)]]]])
 
 
-(r/render-component [root]
-                    (js/document.getElementById "app"))
+(defn hook-navigation! []
+  (accountant/configure-navigation!
+   {:nav-handler (fn [path]
+                   (secretary/dispatch! path))
+    :path-exists? (fn [path]
+                    (secretary/locate-route path))
+    :reload-same-path? true}))
+
+
+(defn init-routes! []
+  (defroute "/" []
+    (swap! app-state assoc :page :home))
+  (defroute "/lahjatoiveet" []
+    (swap! app-state assoc :page :gift-wishes))
+  (hook-navigation!))
+
+
+(defn mount! []
+  (r/render-component [root]
+                      (js/document.getElementById "app")))
+
+
+(defn init! []
+  (init-routes!)
+  (mount!))
+
+
+(init!)
 
 
 (defn on-js-reload []
