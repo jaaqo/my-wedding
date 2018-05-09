@@ -80,13 +80,16 @@
 (defn get-state
   "Return app state of any depth using `keys` as path."
   [& keys]
-  @(r/track #(get-in @app-state %) keys))
+  (get-in @app-state keys))
+
+
+(def form-cursor (r/cursor app-state [:form]))
 
 
 (defn get-form-state
   "Return form state from any depth with `keys`."
   [& keys]
-  @(r/track #(apply get-state (into [:form] %)) keys))
+  (get-in @form-cursor keys))
 
 
 (defn handle-submit
@@ -121,40 +124,56 @@
           ^{:key (:id n)}
           [:div.alert {:class (alert-class (:type n))} (:text n)]))])))
 
-(defn hello-world []
+
+(defn response-form [& {:keys [on-submit
+                               text-input-value
+                               on-text-input-change
+                               sending?]}]
+  [:form.form {:id "response-form"
+               :on-submit on-submit}
+   [:div.form-group
+    [:label {:for "first-name"} "Etunimi:"]
+    [:input {:type "text"
+             :class "form-control"
+             :id "first-name"
+             :value (text-input-value :first-name)
+             :on-change (on-text-input-change :first-name)}]]
+   [:div.form-group
+    [:label {:for "first-name"} "Sukunimi:"]
+    [:input {:type "text"
+             :class "form-control"
+             :id "last-name"
+             :value (text-input-value :last-name)
+             :on-change (on-text-input-change :last-name)}]]
+   [:button {:type "submit"
+             :class "btn btn-primary"
+             :disabled sending?}
+    (if sending?
+      "Lähetetään..."
+      "Lähetä")]])
+
+(defn response-form-container []
+  [:div
+   [:h1 "Ilmoittaudu"]
+   [response-form
+    :on-submit handle-submit
+    :text-input-value #(get-form-state %)
+    :on-text-input-change #(handle-change %)
+    :sending? (get-state :sending)]])
+
+
+(defn root []
   [:div.container
    [:div.row
     [:div.col
      [alert-container]]]
    [:div.row
     [:div.col
-     [:h1 "Ilmoittaudu"]
-     [:form.form {:id "response-form"
-             :on-submit handle-submit}
-      [:div.form-group
-       [:label {:for "first-name"} "Etunimi:"]
-       [:input {:type "text"
-                :class "form-control"
-                :id "first-name"
-                :value (get-form-state :first-name)
-                :on-change (handle-change :first-name)}]]
-      [:div.form-group
-       [:label {:for "first-name"} "Sukunimi:"]
-       [:input {:type "text"
-                :class "form-control"
-                :id "last-name"
-                :value (get-form-state :last-name)
-                :on-change (handle-change :last-name)}]]
-      [:button {:type "submit"
-                :class "btn btn-primary"
-                :disabled (get-state :sending)}
-       (if (get-state :sending)
-         "Lähetetään..."
-         "Lähetä")]]]]])
+     [response-form-container]]]])
 
 
-(r/render-component [hello-world]
-                          (js/document.getElementById "app"))
+(r/render-component [root]
+                    (js/document.getElementById "app"))
 
 
 (defn on-js-reload []
