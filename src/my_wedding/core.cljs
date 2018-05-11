@@ -110,12 +110,15 @@
                :handler handle-submit-success
                :error handle-submit-error})))
 
+
 (defn path []
   (let [loc js/window.location]
     (str (.-pathname loc) (.-query loc) (.-hash loc))))
 
+
 (defn current-path []
   @(r/track path (get-state :page)))
+
 
 (defn navigation []
   (let [links [{:text "Etusivu"
@@ -173,6 +176,7 @@
     (if sending?
       "Lähetetään..."
       "Lähetä")]])
+
 
 (defn response-form-container []
   [:div
