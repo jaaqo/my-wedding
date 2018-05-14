@@ -2,6 +2,10 @@
   (:require [reagent.core :as r]
             [secretary.core :as secretary :refer-macros [defroute]]
             [accountant.core :as accountant]
+            [my-wedding.pages.response :refer [response-page]]
+            [my-wedding.pages.home :refer [home-page]]
+            [my-wedding.pages.gift-wishes :refer [gift-wishes-page]]
+            [my-wedding.pages.error :refer [error-page]]
             [my-wedding.db :as db]))
 
 
@@ -14,7 +18,7 @@
   @(r/track path (db/get-state :page)))
 
 
-(defn navigation []
+(defn navigation-container []
   (let [links [{:text "Etusivu"
                 :href "/"}
                {:href "/ilmoittaudu"
@@ -29,6 +33,21 @@
          [:li.nav-item
           [:a.nav-link {:href href
                         :class (when (= (current-path) href) "active")} text]]))]]))
+
+
+(defmulti current-page db/get-current-page)
+
+(defmethod current-page :home []
+  [home-page])
+
+(defmethod current-page :response []
+  [response-page])
+
+(defmethod current-page :gift-wishes []
+  [gift-wishes-page])
+
+(defmethod current-page :default []
+  [error-page])
 
 
 (defn hook-navigation! []
