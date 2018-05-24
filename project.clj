@@ -67,8 +67,7 @@
              ;; server, this is for simple ring servers, if this
 
              ;; doesn't work for you just run your own server :) (see lein-ring)
-
-             ;; :ring-handler hello_world.server/handler
+             :ring-handler my-wedding.server/handler
 
              ;; To be able to open files in your editor from the heads up display
              ;; you will need to put a script on your path.

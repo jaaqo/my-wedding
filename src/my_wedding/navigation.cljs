@@ -66,4 +66,5 @@
     (db/set-state assoc :page :response))
   (defroute "/lahjatoiveet" []
     (db/set-state assoc :page :gift-wishes))
-  (hook-navigation!))
+  (hook-navigation!)
+  (accountant/dispatch-current!))
