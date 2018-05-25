@@ -23,7 +23,7 @@
 
   :cljsbuild {:builds
               [{:id "dev"
-                :source-paths ["src"]
+                :source-paths ["src/cljs"]
 
                 ;; The presence of a :figwheel configuration here
                 ;; will cause figwheel to inject the figwheel client
@@ -36,9 +36,9 @@
                            :open-urls ["http://localhost:3449/index.html"]}
 
                 :compiler {:main my-wedding.core
-                           :asset-path "js/compiled/out"
-                           :output-to "resources/public/js/compiled/my_wedding.js"
-                           :output-dir "resources/public/js/compiled/out"
+                           :asset-path "compiled/out"
+                           :output-to "resources/public/compiled/my_wedding.js"
+                           :output-dir "resources/public/compiled/out"
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
@@ -47,8 +47,8 @@
                ;; production. You can build this with:
                ;; lein cljsbuild once min
                {:id "min"
-                :source-paths ["src"]
-                :compiler {:output-to "resources/public/js/compiled/my_wedding.js"
+                :source-paths ["src/cljs"]
+                :compiler {:output-to "resources/public/compiled/my_wedding.js"
                            :main my-wedding.core
                            :optimizations :advanced
                            :pretty-print false}}]}
@@ -99,7 +99,7 @@
                                   [figwheel-sidecar "0.5.16"]
                                   [cider/piggieback "0.3.1"]]
                    ;; need to add dev source path here to get user.clj loaded
-                   :source-paths ["src" "dev"]
+                   :source-paths ["src/cljs" "dev"]
 
                    ;; for CIDER
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
