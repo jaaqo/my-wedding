@@ -11,7 +11,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
                  [org.clojure/core.async  "0.4.474"]
-                 [reagent "0.7.0"]
+                 [reagent "0.8.1"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.2.4"]
                  [cljs-ajax "0.7.3"]]
@@ -39,6 +39,8 @@
                            :asset-path "compiled/out"
                            :output-to "resources/public/compiled/my_wedding.js"
                            :output-dir "resources/public/compiled/out"
+                           :npm-deps {:react-recaptcha "2.3.8"}
+                           :install-deps true
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
@@ -105,5 +107,5 @@
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    ;; need to add the compliled assets to the :clean-targets
-                   :clean-targets ^{:protect false} ["resources/public/js/compiled"
+                   :clean-targets ^{:protect false} ["resources/public/compiled"
                                                      :target-path]}})

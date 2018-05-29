@@ -9,16 +9,15 @@
 
 (defn root []
   [:div.container
-   [:div.border-container
-    [:div.row
-     [:div.col
-      [nav/navigation-container]]]
-    [:div.row
-     [:div.col
-      [notify/notification-container]]]
-    [:div.row
-     [:div.col
-      [nav/current-page]]]]])
+   [:div.row
+    [:div.col
+     [nav/navigation-container]]]
+   [:div.row
+    [:div.col
+     [notify/notification-container]]]
+   [:div.row
+    [:div.col
+     [nav/current-page]]]])
 
 
 (defn mount! []

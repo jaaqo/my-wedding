@@ -1,21 +1,27 @@
+$font-family-sans-serif: 'Karma', serif;
+$font-family-serif:      'Karma', serif;
+$font-family-monospace:  Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+$font-family-base:       $font-family-sans-serif !default;
 $greyish: #666766;
 $pinkish: #fbc8b4;
 
+$font-family-header: 'Pacifico', cursive;
+$font-family-secondary-header:'Satisfy', cursive;
+
 html, body {
-  font-family: 'Karma', serif;
-  color: $greyish;
+  color: $greyish !important;
 }
 
 h5, h4, h3, h2, h1 {
-  line-height: 1.4;
+  line-height: 1.4 !important;
 }
 h5, h4, h3, h2 {
-  font-family: 'Satisfy', cursive;
-  color: $pinkish;
+  font-family: $font-family-secondary-header !important;
+  color: $pinkish !important;
 }
 
 h1 {
-  font-family: 'Pacifico', cursive;
+  font-family: $font-family-header !important;
 }
 
 .border-container {
@@ -28,5 +34,16 @@ h1 {
 }
 
 .navbar {
-  padding: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-bottom: 7px double #fbc8b4;
+  margin-bottom: 20px;
+
+  .nav-link.active {
+    font-weight: 600 !important;
+  }
+}
+
+.btn {
+  padding-top: .5rem;
 }

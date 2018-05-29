@@ -1,7 +1,12 @@
 (ns my-wedding.pages.response
   (:require [ajax.core :refer [POST]]
-            [my-wedding.db :as db]))
+            [reagent.core :as r]
+            [my-wedding.db :as db]
+            [react-recaptcha :as Recaptcha]))
 
+(defn onload-callback [response])
+
+(set! js/captchaOnLoad onload-callback)
 
 (defn handle-change
   "Text input field on-change handler. Uses `form-keys` as path inside state's :form key."
@@ -62,37 +67,51 @@
 (defn response-form [& {:keys [on-submit
                                text-input-value
                                on-text-input-change
-                               sending?]}]
-  [:form.form {:id "response-form"
+                               on-captcha-verify
+                               on-captcha-load
+                               disabled?]}]
+  [:form.form {:id        "response-form"
                :on-submit on-submit}
    [:div.form-group
     [:label {:for "first-name"} "Etunimi:"]
-    [:input {:type "text"
-             :class "form-control"
-             :id "first-name"
-             :value (text-input-value :first-name)
+    [:input {:type      "text"
+             :class     "form-control"
+             :id        "first-name"
+             :value     (text-input-value :first-name)
              :on-change (on-text-input-change :first-name)}]]
    [:div.form-group
     [:label {:for "last-name"} "Sukunimi:"]
-    [:input {:type "text"
-             :class "form-control"
-             :id "last-name"
-             :value (text-input-value :last-name)
+    [:input {:type      "text"
+             :class     "form-control"
+             :id        "last-name"
+             :value     (text-input-value :last-name)
              :on-change (on-text-input-change :last-name)}]]
-   [:button {:type "submit"
-             :class "btn btn-primary"
-             :disabled sending?}
-    (if sending?
+   [:div.form-group
+    [:> Recaptcha {:sitekey         "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
+                   :hl              "fi"
+                   :element-ID      "captcha"
+                   :render          "explicit"
+                   :onload-callback on-captcha-load
+                   :verify-callback on-captcha-verify}]]
+   [:button {:type     "submit"
+             :class    "btn btn-primary"
+             :disabled disabled?}
+    (if (db/get-state :sending)
       "Lähetetään..."
       "Lähetä")]])
 
 
 (defn response-form-container []
-  [response-form
-   :on-submit handle-submit
-   :text-input-value #(db/get-form-state %)
-   :on-text-input-change #(handle-change %)
-   :sending? (db/get-state :sending)])
+  (let [captcha-ok (r/atom false)]
+    (fn []
+      [response-form
+       :on-submit handle-submit
+       :text-input-value #(db/get-form-state %)
+       :on-text-input-change #(handle-change %)
+       :disabled? (or (db/get-state :sending)
+                      (not @captcha-ok))
+       :on-captcha-load onload-callback
+       :on-captcha-verify #(reset! captcha-ok true)])))
 
 
 (defn response-page []
