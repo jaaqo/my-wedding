@@ -6,7 +6,6 @@
 
 (enable-console-print!)
 
-
 (defn root []
   [:div.container
    [:div.row
@@ -21,8 +20,7 @@
 
 
 (defn mount! []
-  (r/render-component [root]
-                      (js/document.getElementById "app")))
+  (r/render-component [root] (js/document.getElementById "app")))
 
 
 (defn init! []

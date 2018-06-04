@@ -14,8 +14,8 @@
     "jquery": "^3.3.1",
     "node-sass": "^4.9.0",
     "popper.js": "^1.14.3",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "react": "15.2.1",
+    "react-dom": "15.2.1",
     "react-recaptcha": "^2.3.8",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.21.0",
@@ -23,7 +23,9 @@
   },
   "devDependencies": {
     "autoprefixer": "^8.5.0",
+    "copy-webpack-plugin": "^4.5.1",
     "cssnano": "^3.10.0",
+    "mini-css-extract-plugin": "^0.4.0",
     "postcss-loader": "^2.1.5",
     "precss": "^3.1.2",
     "webpack-cli": "^2.1.4"

@@ -2,7 +2,7 @@
   :description "FIXME: write this!"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+            :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
 
 
@@ -11,7 +11,8 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.238"]
                  [org.clojure/core.async  "0.4.474"]
-                 [reagent "0.8.1"]
+                 [reagent "0.7.0" :exclusions [[cljsjs/react]
+                                               [cljsjs/react-dom]]]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.2.4"]
                  [cljs-ajax "0.7.3"]]
@@ -22,7 +23,7 @@
   :source-paths ["src"]
 
   :cljsbuild {:builds
-              [{:id "dev"
+              [{:id           "dev"
                 :source-paths ["src/cljs"]
 
                 ;; The presence of a :figwheel configuration here
@@ -35,31 +36,35 @@
                            ;; Comment this out once it no longer serves you.
                            :open-urls ["http://localhost:3449/index.html"]}
 
-                :compiler {:main my-wedding.core
-                           :asset-path "compiled/out"
-                           :output-to "resources/public/compiled/my_wedding.js"
-                           :output-dir "resources/public/compiled/out"
-                           :npm-deps {:react-recaptcha "2.3.8"}
-                           :install-deps true
+                :compiler {:main                 my-wedding.core
+                           :asset-path           "app/out"
+                           :output-to            "resources/public/app/my_wedding.js"
+                           :output-dir           "resources/public/app/out"
+                           :npm-deps             false
+                           :foreign-libs [{:file "resources/public/bundle.js"
+                                           :provides ["cljsjs.react" "cljsjs.react.dom" "npm"]}]
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
-                           :preloads [devtools.preload]}}
+                           :preloads             [devtools.preload]}}
                ;; This next build is a compressed minified build for
                ;; production. You can build this with:
                ;; lein cljsbuild once min
-               {:id "min"
+               {:id           "min"
                 :source-paths ["src/cljs"]
-                :compiler {:output-to "resources/public/compiled/my_wedding.js"
-                           :main my-wedding.core
-                           :optimizations :advanced
-                           :pretty-print false}}]}
+                :compiler     {:output-to     "resources/public/app/my_wedding.js"
+                               :npm-deps      false
+                               :foreign-libs [{:file "resources/public/bundle.js"
+                                               :provides ["cljsjs.react" "cljsjs.react.dom" "npm"]}]
+                               :main          my-wedding.core
+                               :optimizations :advanced
+                               :pretty-print  false}}]}
 
   :figwheel {;; :http-server-root "public" ;; default and assumes "resources"
              ;; :server-port 3449 ;; default
              ;; :server-ip "127.0.0.1"
 
-             :css-dirs ["resources/public/css"] ;; watch and update CSS
+             :css-dirs ["resources/public"] ;; watch and update CSS
 
              ;; Start an nREPL server into the running figwheel process
              ;; :nrepl-port 7888
@@ -105,7 +110,7 @@
 
                    ;; for CIDER
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
-                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
+                   :repl-options  {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    ;; need to add the compliled assets to the :clean-targets
-                   :clean-targets ^{:protect false} ["resources/public/compiled"
+                   :clean-targets ^{:protect false} ["resources/public/app"
                                                      :target-path]}})
