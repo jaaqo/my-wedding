@@ -12,6 +12,13 @@
 
 (set! js/captchaOnLoad onload-callback)
 
+
+(defn- toggle-keyword [previous-value new-value]
+  (let [value (keyword new-value)]
+    (if (= previous-value value)
+      nil
+      value)))
+
 (defn handle-change
   "Text input field on-change handler. Uses `form-keys` as path inside state's :form key."
   [& form-keys]
@@ -121,32 +128,66 @@
                :value     (value form-key)
                :on-change (on-change form-key)}]])
 
+(defn radio-input [{:keys [id name value label checked on-change]}]
+  [:div.form-check.form-check-inline
+   [:input.form-check-input {:type "radio"
+                             :name name
+                             :value value
+                             :id id
+                             :checked checked
+                             :on-change on-change}]
+   [:label.form-check-label {:for id}
+    label]])
 
-(defn response-form-fields [{:keys [key error value on-change attending?]}]
+(defn checkbox-input [{:keys [id name value label checked on-change]}]
+  [:div.form-check
+   [:input.form-check-input {:type "checkbox"
+                             :name name
+                             :value value
+                             :id id
+                             :checked checked
+                             :on-change on-change}]
+   [:label.form-check-label {:for id}
+    label]])
+
+
+(defn response-form-fields [{:keys [key error value on-change checkbox-on-change checkbox-checked attending?]}]
   [:div.fields
    [:h3 (if (zero? key)
           "Henkilö"
           (str "Henkilö " (inc key))) ]
 
-   [text-input-group {:name "first-name"
-                      :label "Etunimi:"
-                      :form-key :first-name
-                      :error error
-                      :value value
-                      :on-change on-change}]
-   [text-input-group {:name "last-name"
-                      :label "Sukunimi:"
-                      :form-key :last-name
+   [text-input-group {:name "name"
+                      :label "Nimi:"
+                      :form-key :name
                       :error error
                       :value value
                       :on-change on-change}]
    (when attending?
-     [textarea-group {:name "allergies"
-                      :label "Allergiat:"
-                      :form-key :allergies
-                      :error error
-                      :value value
-                      :on-change on-change}])])
+     [:div
+      [textarea-group {:name "allergies"
+                       :label "Erityisruokavalio/allergiat:"
+                       :form-key :allergies
+                       :error error
+                       :value value
+                       :on-change on-change}]
+      [:div.form-group
+       [:span "Osallistuminen yhteiskuljetukseen:"]
+       [checkbox-input {:label "En osallistu"
+                        :id "no-transportation"
+                        :value :no-transportation
+                        :checked (checkbox-checked :no-transportation)
+                        :on-change #(checkbox-on-change [key :no-transportation] %)}]
+       [checkbox-input {:label "Kirkolta juhlapaikalle"
+                        :id "transportation-church-venue"
+                        :value :transportation-church-venue
+                        :checked (checkbox-checked :transportation-church-venue)
+                        :on-change #(checkbox-on-change [key :transportation-church-venue] %)}]
+       [checkbox-input {:label "Juhlapaikalta Hyvinkään keskustaan"
+                        :id "transportation-venue-city"
+                        :value :transportation-venue-city
+                        :checked (checkbox-checked :transportation-venue-city)
+                        :on-change #(checkbox-on-change [key :transportation-venue-city] %)}]]])])
 
 
 (defn response-form [& {:keys [on-submit
@@ -156,12 +197,14 @@
                                radio-input-value
                                on-text-input-change
                                on-radio-input-change
+                               on-checkbox-input-change
                                on-add-another
                                on-clear
                                on-remove-person
                                on-captcha-verify
                                on-captcha-expiry
                                on-captcha-load
+                               checkbox-checked
                                attending?
                                sending?
                                disabled?]}]
@@ -169,25 +212,18 @@
                :on-submit on-submit
                :no-validate true}
    [:div.form-group
-    [:div.form-check.form-check-inline
-     [:input.form-check-input {:type "radio"
-                               :name "attending"
-                               :value :attending
-                               :id "attending-check"
-                               :checked (radio-input-value :attending)
-                               :on-change on-radio-input-change}]
-     [:label.form-check-label {:for "attending-check"}
-      "Osallistun"]
-     ]
-    [:div.form-check.form-check-inline
-     [:input.form-check-input {:type "radio"
-                               :name "attending"
-                               :value :not-attending
-                               :id "not-attending-check"
-                               :checked (radio-input-value :not-attending)
-                               :on-change on-radio-input-change}]
-     [:label.form-check-label {:for "not-attending-check"}
-      "En osallistu"]]]
+    [radio-input {:value :attending
+                  :id    "attending-check"
+                  :name  "attending"
+                  :label "Osallistun"
+                  :checked   (radio-input-value :attending)
+                  :on-change on-radio-input-change}]
+    [radio-input {:value :not-attending
+                  :id    "not-attending-check"
+                  :name  "attending"
+                  :label "En osallistu"
+                  :checked   (radio-input-value :not-attending)
+                  :on-change on-radio-input-change}]]
    (doall
     (for [[k _] form]
       ^{:key k}
@@ -196,18 +232,19 @@
                               :value (partial text-input-value k)
                               :error (partial error k)
                               :attending? attending?
+                              :checkbox-on-change on-checkbox-input-change
+                              :checkbox-checked (partial checkbox-checked k)
                               :on-change (partial on-text-input-change k)}]
        (when-not (zero? k)
          [:button.btn.btn-light.btn-sm {:type "button"
                                        :on-click (partial on-remove-person k)} (str "Poista henkilö " (inc k))])
        [:hr]]))
-
    (when attending?
      [:div
       [:button {:type     "button"
                 :on-click on-add-another
                 :class    "btn btn-secondary"}
-       "Lisää henkilö"]
+       "Lisää toinen henkilö"]
       [:hr]])
    [:div.form-group
     [recaptcha {:sitekey         "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
@@ -229,6 +266,10 @@
              :class    "btn btn-dark"}
       "Tyhjennä"]])
 
+(defn checkbox-on-change [form-keys event]
+  (let [previous-state (apply db/get-form-state form-keys)
+        new-value (.. event -target -value)]
+    (db/set-state assoc-in (into [:form] form-keys) (toggle-keyword previous-state new-value))))
 
 (defn response-form-container []
   (let [captcha-ok (r/atom false)]
@@ -240,8 +281,11 @@
        :text-input-value #(db/get-form-state %1 %2)
        :radio-input-value #(when (= (db/get-form-state 0 :attending) %1)
                              "checked")
+       :checkbox-checked #(when (= (db/get-form-state %1 %2) %2)
+                            "checked")
        :on-text-input-change #(handle-change %1 %2)
        :on-radio-input-change (handle-change-transforming keyword 0 :attending)
+       :on-checkbox-input-change checkbox-on-change
        :on-add-another db/add-new-person-fields
        :on-clear  #(when (js/confirm "Haluatko varmasti tyhjentää lomakkeen?")
                      (db/clear-form))
