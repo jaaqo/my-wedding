@@ -2,10 +2,12 @@
   (:require [reagent.core :as r]))
 
 
+(def default-form {0 {:attending :attending}})
+
 (defonce app-state
   (r/atom {:api-url "https://script.google.com/macros/s/AKfycbyLCwTTW-TQcULzFl2CgIpyegFK5KyNHWPlMNPeNgzS5EoRkc0V/exec"
            :page :home
-           :form {0 {}}
+           :form default-form
            :form-errors {}
            :notifications []
            :sending false}))
@@ -51,6 +53,7 @@
 (defn set-state
   "Set `app-state` using `swap!` with same signature."
   [fn keys & rst]
+  (println keys rst)
   (apply swap! app-state fn keys rst))
 
 
@@ -83,5 +86,9 @@
     (set-state assoc-in [:form new-key] {})))
 
 (defn clear-form []
-  (set-state assoc :form {0 {}})
+  (set-state assoc :form default-form)
   (set-state assoc :form-errors {}))
+
+(defn remove-person [key]
+  (set-state update-in [:form] dissoc key)
+  (set-state update-in [:form-errors] dissoc key))

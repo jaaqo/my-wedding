@@ -19,6 +19,14 @@
     (db/set-state assoc-in (into [:form] form-keys) (.. event -target -value))))
 
 
+(defn handle-change-transforming
+  "Text input field on-change handler. Uses `form-keys` as path inside state's :form key.
+  Uses `transformer-fn` to edit the input value before saving."
+  [transformer-fn & form-keys]
+  (fn [event]
+    (db/set-state assoc-in (into [:form] form-keys) (transformer-fn (.. event -target -value)))))
+
+
 (defn handle-submit-success
   "Stop sending state and add a self-clearing notification of the form submit success."
   [response]
@@ -114,8 +122,12 @@
                :on-change (on-change form-key)}]])
 
 
-(defn response-form-fields [{:keys [key error value on-change]}]
+(defn response-form-fields [{:keys [key error value on-change attending?]}]
   [:div.fields
+   [:h3 (if (zero? key)
+          "Henkilö"
+          (str "Henkilö " (inc key))) ]
+
    [text-input-group {:name "first-name"
                       :label "Etunimi:"
                       :form-key :first-name
@@ -128,42 +140,75 @@
                       :error error
                       :value value
                       :on-change on-change}]
-   [textarea-group {:name "allergies"
-                    :label "Allergiat:"
-                    :form-key :allergies
-                    :error error
-                    :value value
-                    :on-change on-change}]])
+   (when attending?
+     [textarea-group {:name "allergies"
+                      :label "Allergiat:"
+                      :form-key :allergies
+                      :error error
+                      :value value
+                      :on-change on-change}])])
 
 
 (defn response-form [& {:keys [on-submit
                                form
                                error
                                text-input-value
+                               radio-input-value
                                on-text-input-change
+                               on-radio-input-change
                                on-add-another
                                on-clear
+                               on-remove-person
                                on-captcha-verify
                                on-captcha-expiry
                                on-captcha-load
+                               attending?
                                sending?
                                disabled?]}]
   [:form.form {:id        "response-form"
                :on-submit on-submit
                :no-validate true}
+   [:div.form-group
+    [:div.form-check.form-check-inline
+     [:input.form-check-input {:type "radio"
+                               :name "attending"
+                               :value :attending
+                               :id "attending-check"
+                               :checked (radio-input-value :attending)
+                               :on-change on-radio-input-change}]
+     [:label.form-check-label {:for "attending-check"}
+      "Osallistun"]
+     ]
+    [:div.form-check.form-check-inline
+     [:input.form-check-input {:type "radio"
+                               :name "attending"
+                               :value :not-attending
+                               :id "not-attending-check"
+                               :checked (radio-input-value :not-attending)
+                               :on-change on-radio-input-change}]
+     [:label.form-check-label {:for "not-attending-check"}
+      "En osallistu"]]]
    (doall
     (for [[k _] form]
       ^{:key k}
       [:div.person
-       [response-form-fields {:value (partial text-input-value k)
+       [response-form-fields {:key k
+                              :value (partial text-input-value k)
                               :error (partial error k)
+                              :attending? attending?
                               :on-change (partial on-text-input-change k)}]
+       (when-not (zero? k)
+         [:button.btn.btn-light.btn-sm {:type "button"
+                                       :on-click (partial on-remove-person k)} (str "Poista henkilö " (inc k))])
        [:hr]]))
-   [:button {:type     "button"
-             :on-click on-add-another
-             :class    "btn btn-secondary"}
-    "Lisää henkilö"]
-   [:hr]
+
+   (when attending?
+     [:div
+      [:button {:type     "button"
+                :on-click on-add-another
+                :class    "btn btn-secondary"}
+       "Lisää henkilö"]
+      [:hr]])
    [:div.form-group
     [recaptcha {:sitekey         "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
                 :hl              "fi"
@@ -186,20 +231,26 @@
 
 
 (defn response-form-container []
-  (let [captcha-ok (r/atom true)]
+  (let [captcha-ok (r/atom false)]
     (fn []
       [response-form
        :form (db/get-state :form)
        :on-submit handle-submit
        :error #(db/get-form-error %1 %2)
        :text-input-value #(db/get-form-state %1 %2)
+       :radio-input-value #(when (= (db/get-form-state 0 :attending) %1)
+                             "checked")
        :on-text-input-change #(handle-change %1 %2)
+       :on-radio-input-change (handle-change-transforming keyword 0 :attending)
        :on-add-another db/add-new-person-fields
        :on-clear  #(when (js/confirm "Haluatko varmasti tyhjentää lomakkeen?")
                      (db/clear-form))
+       :on-remove-person #(when (js/confirm "Haluatko varmasti poistaa henkilön lomakkeelta?")
+                            (db/remove-person %1))
        :disabled? (or (db/get-state :sending)
                       (not @captcha-ok))
        :sending? (db/get-state :sending)
+       :attending? (= (db/get-form-state 0 :attending) :attending)
        :on-captcha-load onload-callback
        :on-captcha-expiry #(reset! captcha-ok false)
        :on-captcha-verify #(reset! captcha-ok true)])))
