@@ -87,6 +87,26 @@
       false)))
 
 
+(defn prepare-form-data [data]
+  (let [attending? (let [val (get data :attending "")]
+                     (= val :attending))
+        form-data (doto
+                      (js/FormData.)
+                    (.append "name" (get data :name ""))
+                    (.append "attending" attending?))]
+    (if attending?
+      (doto form-data
+        (.append "allergies" (get data :allergies ""))
+        (.append "noTransportation" (get data :no-transportation "false"))
+        (.append "transportationChurchVenue" (get data :transportation-church-venue "false"))
+        (.append "transportationVenueCity" (get data :transportation-venue-city "false")))
+      (doto form-data
+        (.append "allergies" "")
+        (.append "noTransportation" "")
+        (.append "transportationChurchVenue" "")
+        (.append "transportationVenueCity" "")))))
+
+
 (defn handle-submit
   "Prevent default behaviour of form submit and send
   a post ajax call to the google sheets script api endpoint."
@@ -97,14 +117,7 @@
       (doall
        (for [[_ form-part] validated-form]
          (let [url       (db/get-state :api-url)
-               form-data (doto
-                             (js/FormData.)
-                           (.append "name" (get form-part :name ""))
-                           (.append "attending" (get form-part :attending ""))
-                           (.append "allergies" (get form-part :allergies ""))
-                           (.append "noTransportation" (get form-part :no-transportation "false"))
-                           (.append "transportationChurchVenue" (get form-part :transportation-church-venue "false"))
-                           (.append "transportationVenueCity" (get form-part :transportation-venue-city "false")))]
+               form-data (prepare-form-data form-part)]
            (db/set-sending-state true)
            (POST url {:body            form-data
                       :response-format :json
