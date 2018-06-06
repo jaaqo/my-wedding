@@ -5,6 +5,7 @@
             [my-wedding.pages.response :refer [response-page]]
             [my-wedding.pages.home :refer [home-page]]
             [my-wedding.pages.gift-wishes :refer [gift-wishes-page]]
+            [my-wedding.pages.lodging :refer [lodging-page]]
             [my-wedding.pages.error :refer [error-page]]
             [my-wedding.db :as db]))
 
@@ -23,6 +24,8 @@
                 :href "/"}
                {:href "/ilmoittaudu"
                 :text "Ilmoittaudu"}
+               {:href "/majoitus-ja-reittiohjeet"
+                :text "Majoitus ja reittiohjeet"}
                {:href "/lahjatoiveet"
                 :text "Lahjatoiveet"}]]
     [:nav.navbar.navbar-expand.navbar-light
@@ -46,6 +49,9 @@
 (defmethod current-page :gift-wishes []
   [gift-wishes-page])
 
+(defmethod current-page :lodging []
+  [lodging-page])
+
 (defmethod current-page :default []
   [error-page])
 
@@ -66,5 +72,7 @@
     (db/set-state assoc :page :response))
   (defroute "/lahjatoiveet" []
     (db/set-state assoc :page :gift-wishes))
+  (defroute "/majoitus-ja-reittiohjeet" []
+    (db/set-state assoc :page :lodging))
   (hook-navigation!)
   (accountant/dispatch-current!))

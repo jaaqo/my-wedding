@@ -13,6 +13,10 @@
                  [org.clojure/core.async  "0.4.474"]
                  [reagent "0.7.0" :exclusions [[cljsjs/react]
                                                [cljsjs/react-dom]]]
+
+
+                 [cljsjs/google-map-react "0.22.0-0"]
+                 [cljsjs/react-google-maps "9.4.5-0"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.2.4"]
                  [cljs-ajax "0.7.3"]]

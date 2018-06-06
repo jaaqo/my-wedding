@@ -1,4 +1,4 @@
-import '../sass/index.scss'
+import '../sass/index.scss';
 
 window.deps = {
   'jquery': require('jquery'),
@@ -10,6 +10,6 @@ window.deps = {
 
 window.React = window.deps['react'];
 window.ReactDOM = window.deps['react-dom'];
-window.$ = window.jQuery = window.deps['jquery']
-window.Popper =  window.deps['popper']
-require('bootstrap')
+window.$ = window.jQuery = window.deps['jquery'];
+window.Popper =  window.deps['popper'];
+require('bootstrap');
