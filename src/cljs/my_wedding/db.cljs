@@ -53,7 +53,6 @@
 (defn set-state
   "Set `app-state` using `swap!` with same signature."
   [fn keys & rst]
-  (println keys rst)
   (apply swap! app-state fn keys rst))
 
 
