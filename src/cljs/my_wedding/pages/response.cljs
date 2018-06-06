@@ -151,7 +151,7 @@
   )
 
 (defn response-form-container []
-  (let [captcha-ok                    (r/atom true)
+  (let [captcha-ok                    (r/atom false)
         default-form-key              0
         attending-radio-checked       #(if (= (db/get-form-state default-form-key :attending)
                                               :attending)
@@ -238,7 +238,10 @@
                                                :id        (suffix "no-transportation")
                                                :name      "no-transportation"
                                                :checked   (checkbox-checked key :no-transportation)
-                                               :on-change (handle-checkbox-change key :no-transportation)}]
+                                               :on-change #(do
+                                                             (db/set-state assoc-in [:form key :transportation-church-venue] false)
+                                                             (db/set-state assoc-in [:form key :transportation-venue-city] false)
+                                                             ((handle-checkbox-change key :no-transportation)))}]
                      [:label.form-check-label {:for (suffix "no-transportation")}
                       "En osallistu"]]
 
