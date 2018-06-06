@@ -7,7 +7,14 @@
 (enable-console-print!)
 
 (defn root []
-  [:div.container
+  [:div.container.d-flex.flex-column
+   [:header.row.d-flex.align-items-center
+    [:div.col.text-center
+     [:h1
+      [:span.header-top "Iidan ja Jaakon häät"] [:br]
+      [:span.text-pink "1.9.2018"] [:br]
+      [:span.header-left [:i.fas.fa-clock] "14.00"]
+      [:span.header-right [:i.fas.fa-map-marker-alt] "Hyvinkään Vanha kirkko"]]]]
    [:div.row
     [:div.col
      [nav/navigation-container]]]
@@ -16,7 +23,9 @@
      [notify/notification-container]]]
    [:div.row
     [:div.col
-     [nav/current-page]]]])
+     [nav/current-page]]]
+   [:footer.row.d-flex.justify-content-center.align-items-end 
+    [:img.img-fluid {:src "/img/risu.png"}]]])
 
 
 (defn mount! []

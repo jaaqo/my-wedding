@@ -50,9 +50,9 @@
       (db/add-notification
        :id id
        :type "success"
-       :content (str "Henkilön "
-                     (get-in response [:data :name]) " "
-                     " ilmoittautuminen onnistui!"))
+       :content (str "Kiitos ilmoittautumisestasi "
+                     (get-in response [:data :name]) " ja "
+                     "lämpimästi tervetuloa häihimme!"))
       (db/add-notification
        :id id
        :type "error"
@@ -96,15 +96,17 @@
                     (.append "attending" attending?))]
     (if attending?
       (doto form-data
-        (.append "allergies" (get data :allergies ""))
+        (.append "allergies" get data :allergies "")
         (.append "noTransportation" (get data :no-transportation "false"))
         (.append "transportationChurchVenue" (get data :transportation-church-venue "false"))
-        (.append "transportationVenueCity" (get data :transportation-venue-city "false")))
+        (.append "transportationVenueCity" (get data :transportation-venue-city "false"))
+        (.append "wishlist" (get data :wishlist "")))
       (doto form-data
         (.append "allergies" "")
         (.append "noTransportation" "")
         (.append "transportationChurchVenue" "")
-        (.append "transportationVenueCity" "")))))
+        (.append "transportationVenueCity" "")
+        (.append "wishlist" "")))))
 
 
 (defn handle-submit
@@ -151,7 +153,7 @@
   )
 
 (defn response-form-container []
-  (let [captcha-ok                    (r/atom false)
+  (let [captcha-ok                    (r/atom true)
         default-form-key              0
         attending-radio-checked       #(if (= (db/get-form-state default-form-key :attending)
                                               :attending)
@@ -184,7 +186,7 @@
                      :on-submit   handle-submit
                      :no-validate true}
          [:div.form-group
-          [:div.form-check.form-check-inline
+            [:div.form-check.form-check-inline {:style {:margin-bottom "10px"}}
            [:input.form-check-input {:type      "radio"
                                      :name      "attending"
                                      :value     :attending
@@ -192,9 +194,9 @@
                                      :checked   (attending-radio-checked)
                                      :on-change handle-attending-radio-change}]
            [:label.form-check-label {:for "attending-check"}
-            "Osallistun"]]
+            "Kiitos kutsusta, tulen/tulemme ilomielin juhlimaan kanssanne!"]]
 
-          [:div.form-check.form-check-inline
+          [:div.form-check.form-check
            [:input.form-check-input {:type      "radio"
                                      :name      "attending"
                                      :value     :not-attending
@@ -202,7 +204,7 @@
                                      :checked   (not (attending-radio-checked))
                                      :on-change handle-attending-radio-change}]
            [:label.form-check-label {:for "not-attending-check"}
-            "En osallistu"]]]
+            "Valitettavasti en/emme pääse osallistumaan."]]]
 
          (doall
           (for [[key _] form]
@@ -214,9 +216,6 @@
               ^{:key key}
               [:div.person
                [:div.fields
-                [:h3 (if (zero? key)
-                       "Henkilö"
-                       (str "Henkilö " (inc key)))]
                 [text-input-group {:name      "name"
                                    :label     "Nimi:"
                                    :form-key  :name
@@ -264,11 +263,20 @@
                                                   :disabled  disabled?
                                                   :on-change (handle-checkbox-change key :transportation-venue-city)}]
                         [:label.form-check-label {:for (suffix "transportation-venue-city")}
-                         "Juhlapaikalta Hyvinkään keskustaan"]]])]])]
+                         "Juhlapaikalta Hyvinkään keskustaan"]]])]
+
+                [text-input-group {:name      "wishlist"
+                                   :label     "Tämä kappale saa minut taatusti tanssilattialle:"
+                                   :form-key  :wishlist
+                                   :error     error
+                                   :value     value
+                                   :on-change on-change}]
+
+                   ])]
                (when-not (zero? key)
                  [:button.btn.btn-light.btn-sm {:type     "button"
                                                 :on-click (partial handle-remove-person key)}
-                  (str "Poista henkilö " (inc key))])
+                  (str "Poista")])
                [:hr]])))
 
          (when attending?
@@ -280,7 +288,7 @@
             [:hr]])
 
          [:div.form-group
-          [recaptcha {:sitekey          "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
+          #_[recaptcha {:sitekey          "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
                       :hl               "fi"
                       :element-ID       "captcha"
                       :render           "explicit"
@@ -302,6 +310,6 @@
 
 
 (defn response-page []
-  [:div
-   [:h1 "Ilmoittaudu"]
+  [:div.page
+   [:h2.page-heading "Ilmoittautuminen häihin"]
    [response-form-container]])
