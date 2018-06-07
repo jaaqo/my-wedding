@@ -1,10 +1,12 @@
 # my-wedding
 
-FIXME: Write a one-line description of your library/project.
+ClojureScript single page application website (slight overkill) for my wedding.
 
 ## Overview
 
-FIXME: Write a paragraph about the library/project and highlight its goals.
+Statically hosted website on S3 with CloudFront to provide routing to index.html to enable proper client side routing and SSL.
+
+Form submissions are persisted on a Google Sheet using a Google Scripts app as an endpoint.
 
 ## Setup
 
@@ -34,11 +36,6 @@ get live reloading, nor a REPL.
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Jaakko Salokanta
 
 Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
-
-ns-773.awsdns-32.net. 
-ns-1144.awsdns-15.org. 
-ns-1929.awsdns-49.co.uk. 
-ns-57.awsdns-07.com.
