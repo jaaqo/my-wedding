@@ -92,15 +92,15 @@
                      (= val :attending))
         form-data (doto
                       (js/FormData.)
-                    (.append "name" (get data :name ""))
+                    (.append "name" (utils/truncate (get data :name "") 150))
                     (.append "attending" attending?))]
     (if attending?
       (doto form-data
-        (.append "allergies" (get data :allergies ""))
+        (.append "allergies" (utils/truncate (get data :allergies "") 800))
         (.append "noTransportation" (get data :no-transportation "false"))
         (.append "transportationChurchVenue" (get data :transportation-church-venue "false"))
         (.append "transportationVenueCity" (get data :transportation-venue-city "false"))
-        (.append "wishlist" (get data :wishlist "")))
+        (.append "wishlist" (utils/truncate (get data :wishlist "") 300)))
       (doto form-data
         (.append "allergies" "")
         (.append "noTransportation" "")

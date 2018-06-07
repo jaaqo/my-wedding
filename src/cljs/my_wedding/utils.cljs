@@ -31,3 +31,7 @@
           (.setTimeout js/window (fn []
                                    (.scrollTo js/window 0 move-to))
                        timeout))))))
+
+(defn truncate
+  [s n]
+  (subs s 0 (min (count s) n)))
