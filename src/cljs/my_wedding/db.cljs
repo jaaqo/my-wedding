@@ -10,7 +10,8 @@
            :form default-form
            :form-errors {}
            :notifications []
-           :sending false}))
+           :sending false
+           :log []}))
 
 
 (defn get-state
@@ -55,6 +56,15 @@
   [fn keys & rst]
   (apply swap! app-state fn keys rst))
 
+(defn log
+  "Tiny utility to 'log' to app-state for easier mobile testing."
+  [msg]
+  (set-state update :log conj msg))
+
+(defn get-log
+  "Return the current log from `app-state`."
+  []
+  (get-state :log))
 
 (defn set-sending-state
   "Set global sending state to `state`."
