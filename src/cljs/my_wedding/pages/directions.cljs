@@ -46,4 +46,12 @@
       [:div.col
        [:h3 "Hääjuhla"]
        [:b "Kytäjän juhlatila"]
-       [:p "Maapässintie 108, 05720 Hyvinkää"]]]]))
+       [:p "Maapässintie 108, 05720 Hyvinkää"]]]
+     [:div.row {:style {:margin-top "40px"}}
+      [:div.col
+       [:h3 "Ajo-ohje kirkolta juhlapaikalle"]
+       [:p "Aja " [:b "Uudenmaankatua"] " ja käänny liikennevaloristeyksestä oikealle " [:b "Kalevankadulle."] [:br]
+        "Jatka " [:b "Kalevankatua"] " noin 800 m ja käänny vasemmalle " [:b "Läntiselle Yhdystielle (reitti 1361)."] [:br]
+        "Aja vastaan tulevasta liikenneympyrästä suoraan ja jatka " [:b "Läntistä Yhdystietä"] " (vaihtuu " [:b "Kytäjäntieksi"] ") noin 9 km." [:br]
+        "Käänny vasemmalle " [:b "Palkkisillantielle"] " ja jatka 1,5 km." [:br]
+        "Käänny oikealle " [:b "Maapässintielle"] " ja aja tien päähän niin pitkälle, että punainen juhlatila tulee vastaan. Olet perillä!"]]]]))

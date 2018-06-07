@@ -7,15 +7,17 @@
     [:p "Olemme varanneet huonekiintiön Scandic Hyvinkää -hotellista, joka sijaitsee kävelymatkan päässä kirkolta. Koodilla " [:b "\"Iida ja Jaakko 2018\""] " saatte huonevarauksen (sis. aamiainen) tarjoushinnalla."]]
    [:div.row>div.col
     [:h3 "Scandic Hyvinkää"]
-    [:p "Hämeenkatu 2-4, 05800 Hyvinkää"]
-    [:p
-        "Voitte tehdä varauksen "
+    [:p "Hämeenkatu 2-4, 05800 Hyvinkää" [:br]
      [:a {:href "https://www.scandichotels.fi/hotellit/suomi/hyvinkaa/scandic-hyvinkaa"
           :target "_blank"}
-      [:i.fas.fa-external-link-alt] " Hotellin verkkosivujen"]
-     " kautta tai puhelimitse numerosta "
+         [:i.fas.fa-external-link-alt] " Verkkosivut"]]
+    [:p
+        "Voitte tehdä varauksen "
+     [:a {:href "mailto:hyvinkaa@scandichotels.com"}
+      [:i.fas.fa-envelope] " sähköpostitse"]
+        " tai puhelimitse numerosta "
      [:a {:href "tel:+358 19 4291 100"}
-      [:i.fas.fa-phone] " +358 19 4291 100"]]
+      [:i.fas.fa-phone] " +358 19 4291 100"] "."]
     [:p [:b "Teettehän varauksen hyvissä ajoin!"]]]
    [:div.row>div.col {:style {:margin-top "40px"}}
     [:h3 "Muut"]
@@ -23,12 +25,12 @@
     [:ul
      [:li [:a {:href "https://www.hostellipalopuro.fi/"
                :target "_blank"}
-           "Hostelli Palopuro"]]
+           [:i.fas.fa-external-link-alt] " Hostelli Palopuro"]]
      [:li 
       [:a {:href "https://www.scandichotels.fi/hotellit/suomi/riihimaki/scandic-riihimaki"
            :target "_blank"}
-       "Scandic Riihimäki"]]
+       [:i.fas.fa-external-link-alt] " Scandic Riihimäki"]]
      [:li
       [:a {:href "http://www.seurahuone.fi/"
            :target "_blank"}
-       "Hotel Seurahuone Riihimäki"]]]]])
+       [:i.fas.fa-external-link-alt] " Hotel Seurahuone Riihimäki"]]]]])

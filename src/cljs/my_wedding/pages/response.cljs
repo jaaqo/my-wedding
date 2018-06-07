@@ -80,7 +80,7 @@
                 (for [[k form-part] form]
                   (let [errors (cond-> {}
                                  (str/blank? (:name form-part))
-                                 (assoc :first-name "Nimi ei voi olla tyhjä"))]
+                                 (assoc :name "Nimi ei voi olla tyhjä"))]
                     (db/set-form-errors k errors))))]
     (if (every? empty? errors)
       form
@@ -96,7 +96,7 @@
                     (.append "attending" attending?))]
     (if attending?
       (doto form-data
-        (.append "allergies" get data :allergies "")
+        (.append "allergies" (get data :allergies ""))
         (.append "noTransportation" (get data :no-transportation "false"))
         (.append "transportationChurchVenue" (get data :transportation-church-venue "false"))
         (.append "transportationVenueCity" (get data :transportation-venue-city "false"))
@@ -148,9 +148,6 @@
                :id        name
                :value     (value form-key)
                :on-change (on-change form-key)}]])
-
-(defn checkbox-input [{:keys [id name value label checked on-change]}]
-  )
 
 (defn response-form-container []
   (let [captcha-ok                    (r/atom true)
@@ -287,14 +284,14 @@
              "Lisää toinen henkilö"]
             [:hr]])
 
-         [:div.form-group
-          #_[recaptcha {:sitekey          "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
+         #_[:div.form-group
+          [recaptcha {:sitekey          "6Ldd01sUAAAAAIFjlGRC2PvEbG36YYu45A6DFqZ8"
                       :hl               "fi"
                       :element-ID       "captcha"
                       :render           "explicit"
                       :onload-callback  handle-captcha-load
                       :expired-callback handle-captcha-expiry
-                      :verify-callback  handle-captcha-verify}]]
+                        :verify-callback  handle-captcha-verify}]]
 
          [:button {:type     "submit"
                    :class    "btn btn-primary"
