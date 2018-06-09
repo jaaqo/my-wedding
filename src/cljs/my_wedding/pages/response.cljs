@@ -88,7 +88,7 @@
 
 
 (defn prepare-form-data [data]
-  (let [attending? (let [val (get data :attending "")]
+  (let [attending? (let [val (db/get-form-state 0 :attending)]
                      (= val :attending))
         form-data (doto
                       (js/FormData.)
